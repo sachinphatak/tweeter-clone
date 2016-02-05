@@ -1,0 +1,101 @@
+<head>
+    <title>Django Tweeter</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0-rc.2/angular.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0-rc.2/angular-resource.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"> 
+    {% load staticfiles %}
+    <script src="{% static 'tweeter/js/app.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'tweeter/css/cover.css' %}">
+    <script type="text/javascript">
+    	TweeterApp.factory('AuthUser', [function(){
+    		return {
+    			username: "{{auth_username}}",
+    			user_id: "{{auth_user_id}}",
+    			first_name: "{{auth_user_first_name}}",
+    			last_name: "{{auth_user_last_name}}"
+    		};
+    	}]);
+    </script>
+
+</head>
+
+<body ng-app="TweeterApp" ng-controller="TweetsController">
+    <div class="site-wrapper">
+
+        <div class="site-wrapper-inner">
+
+            <div class="cover-container" style="padding: 5% 0 0 0">
+
+                <div class="masthead clearfix" style="height:5%; position: absolute;">
+                    <div class="inner" style="margin:0 0 2% 0;">
+                        <h3 class="masthead-brand">Tweeter</h3>
+                        <nav>
+                            <ul class="nav masthead-nav" ng-init="activeTab = 'all-tweets'">
+                                <li ng-class="{'active': activeTab == 'all-tweets'}" ng-click="activeTab = 'all-tweets'"><a>Tweets</a></li>
+                                <li ng-class="{'active': activeTab == 'my-tweets'}" ng-click="activeTab = 'my-tweets'"><a>My tweets</a></li>
+                                <li ng-class="{'active': activeTab == 'profile'}" ng-click="activeTab = 'profile'"><a>Profile</a></li>
+                                <li ng-show="currentUser.username==''" ng-class="{'active': activeTab == 'login'}" ng-click="activeTab = 'login'"><a href="/accounts/login/">Login</a></li>
+                                <li ng-show="currentUser.username==''" ng-class="{'active': activeTab == 'signup'}" ng-click="activeTab = 'signup'"><a href="/accounts/register/">Signup</a></li>
+                                <li ng-show="currentUser.username!=''" ng-class="{'active': activeTab == 'logout'}" ng-click="activeTab = 'logout'"><a href="/accounts/logout/?next=/">Logout</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+
+                <div class="inner cover" style="overflow: scroll; margin: 3% 0 0 0; position: relative;">
+                    <h4>
+						<textarea name="new-tweet" ng-model="newTweetText" rows=3 
+						style="padding: 3%; border-radius: 7px; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; width: 100%; color: black;" placeholder="Watcha tweetin..."></textarea>
+            		</h4>
+            		<button ng-click="newTweetSubmit(newTweetText)" style="margin: 1% 0 3% 0; width: 100%;" type="button" class="btn btn-success">
+            		<h4>Tweet</h4>
+            		</button>
+            		<div id="all-tweets-container" style="overflow-y: scroll;" ng-show="activeTab == 'all-tweets'">
+                    	<div ng-repeat="tweet in allTweets" style="border-style: solid; border-color: white; padding: 3%; margin: 1% 0 3% 0; border-radius: 7px;">
+                        	<p>[[tweet.text]]</p>
+                        	<hr>
+                        	<span>[[tweet.creator]] at [[tweet.timestamp]]</span>
+                    	</div>
+                    </div>
+                    <div id="my-tweets-container" style="overflow-y: scroll;" ng-show="activeTab == 'my-tweets'">
+                    	<div ng-hide="currentUser.username == ''" ng-repeat="tweet in allTweets | filter: {creator: currentUser.username}" style="border-style: solid; border-color: white; padding: 3%; margin: 1% 0 3% 0; border-radius: 7px;">
+                        	<p>[[tweet.text]]</p>
+                        	<hr>
+                        	<span>[[tweet.creator]] at [[tweet.timestamp]]</span>
+                    	</div>
+                    	<div ng-show="currentUser.username == ''">
+                    		<h3>
+                    		<a href='/accounts/login'>Login</a> to see your tweets here
+                    		</h3>
+                    	</div>
+                    </div>
+                    <div id="my-user-profile" ng-show="activeTab == 'profile'">
+                    	<h3>
+	                    	<div ng-hide="currentUser.username == ''">Username : [[currentUser.username]] <br></div>
+	                    	<div ng-show="currentUser.username == ''"><a href='/accounts/login'>Login</a> to see your profile here</div>
+	                    	<div ng-hide="currentUser.first_name == ''"> First Name: [[currentUser.first_name]] <br></div>
+	                    	<div ng-hide="currentUser.last_name == ''">Last Name: [[CurrentUser.last_name]]</div>
+	                    	<span>
+	                    	<a href="/accounts/password/change">
+		                    	<button ng-hide="currentUser.username == ''" style="margin: 1% 0 3% 0;" type="button" class="btn btn-default">
+		                    		Change password
+		                    	</button>
+	                    	</a>
+	                    	</span>
+	                    </h3>
+                    </div>
+                    <div id="redirecting-to-login" ng-show="activeTab == 'login'">
+                    	<h3>Redirecting to login page...</h3>
+                    </div>
+                    <div id="redirecting-to-login" ng-show="activeTab == 'logout'">
+                    	<h3>Bye, see you soon!</h3>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</body>
