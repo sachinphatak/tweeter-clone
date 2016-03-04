@@ -1,4 +1,4 @@
-var TweeterApp = angular.module('TweeterApp', ['ngResource'])
+var TweeterApp = angular.module('TweeterApp', ['ngResource', 'ui.bootstrap']);
 
 TweeterApp.config(['$interpolateProvider', '$httpProvider', '$resourceProvider', function($interpolateProvider, $httpProvider, $resourceProvider){
 	$interpolateProvider.startSymbol('[[').endSymbol(']]');
@@ -7,7 +7,7 @@ TweeterApp.config(['$interpolateProvider', '$httpProvider', '$resourceProvider',
 	$resourceProvider.defaults.stripTrailingSlashes = false;
 }]);
 
-TweeterApp.controller('TweetsController', ['$scope', 'Tweet', 'AuthUser', function($scope, Tweet, AuthUser){
+TweeterApp.controller('TweetsController', ['$scope', 'Tweet', 'AuthUser', '$uibModal', function($scope, Tweet, AuthUser, $uibModal){
 	
 	$scope.currentUser = AuthUser;
 	
@@ -27,8 +27,37 @@ TweeterApp.controller('TweetsController', ['$scope', 'Tweet', 'AuthUser', functi
 	};
 
 	$scope.allTweets = Tweet.query();
+
+	// $scope.openAuthModal = function(activeTab){
+	// 	$scope.activeTab = activeTab;
+
+	// 	var authModal = $uibModal.open({
+	// 		templateUrl: '/static/tweeter/partials/auth-modal-content.html',
+	// 		controller: 'AuthModalController',
+	// 		resolve: {
+	// 			activeTab: function(){
+	// 				return activeTab;
+	// 			}
+	// 		}
+	// 	});
+
+	// 	authModal.result.then(function(){
+	// 		$scope.activeTab = 'all-tweets';
+	// 	});
+	// };
+
 }]);
+
+// TweeterApp.controller('AuthModalController', ['$scope', '$uibModalInstance', function($scope, $uibModalInstance, activeTab){
+// 	$scope.closeAuthModal = function(){
+// 		$uibModalInstance.close();
+// 	};
+// 	$scope.activeTab = activeTab;
+
+// }]);
 
 TweeterApp.factory('Tweet', ['$resource', function($resource){
 	return $resource("/api/tweets/:id/");
 }]);
+
+
