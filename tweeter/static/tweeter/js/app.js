@@ -27,34 +27,31 @@ TweeterApp.controller('TweetsController', ['$scope', 'Tweet', 'AuthUser', '$uibM
 	};
 
 	$scope.allTweets = Tweet.query();
+	$scope.auth = function(activeTab){
+		$scope.activeTab = activeTab;
+		var authModal = $uibModal.open({
+			templateUrl: '/auth_modal.html',
+			controller: 'AuthModalController',
+			resolve: {
+				activeTab: function(){
+					return activeTab;
+				}
+			}
+		});
 
-	// $scope.openAuthModal = function(activeTab){
-	// 	$scope.activeTab = activeTab;
-
-	// 	var authModal = $uibModal.open({
-	// 		templateUrl: '/static/tweeter/partials/auth-modal-content.html',
-	// 		controller: 'AuthModalController',
-	// 		resolve: {
-	// 			activeTab: function(){
-	// 				return activeTab;
-	// 			}
-	// 		}
-	// 	});
-
-	// 	authModal.result.then(function(){
-	// 		$scope.activeTab = 'all-tweets';
-	// 	});
-	// };
-
+		authModal.result.then(function(){
+			$scope.activeTab = 'all-tweets';
+		});
+	};
 }]);
 
-// TweeterApp.controller('AuthModalController', ['$scope', '$uibModalInstance', function($scope, $uibModalInstance, activeTab){
-// 	$scope.closeAuthModal = function(){
-// 		$uibModalInstance.close();
-// 	};
-// 	$scope.activeTab = activeTab;
+TweeterApp.controller('AuthModalController', ['$scope', '$uibModalInstance','activeTab' ,function($scope, $uibModalInstance, activeTab){
+	$scope.closeAuthModal = function(){
+		$uibModalInstance.close();
+	};
+	$scope.activeTab = activeTab;
 
-// }]);
+}]);
 
 TweeterApp.factory('Tweet', ['$resource', function($resource){
 	return $resource("/api/tweets/:id/");
